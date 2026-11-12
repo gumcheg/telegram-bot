@@ -3,7 +3,7 @@ import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 public class Main {
     public static void main(String[] args) throws Exception {
         HealthServer.start();
-        String botToken = System.getenv("BOT_TOKEN"); // токен бота из @BotFather
+        String botToken = ConfigReader.getToken(); // токен бота из @BotFather
         if (botToken == null) {
             throw new IllegalStateException("Set BOT_TOKEN environment variable");
         }
