@@ -17,12 +17,15 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 
 public class Bot implements LongPollingSingleThreadUpdateConsumer {
 
+    private final Map<Long, String> userClicks = new HashMap<>();
 
     private final TelegramClient telegramClient;
 
@@ -184,8 +187,36 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
         long chatId = query.getMessage().getChatId();
         int messageId = query.getMessage().getMessageId();
 
-        // Подтверждаем нажатие (убираем "часики" на кнопке)
         telegramClient.execute(new AnswerCallbackQuery(query.getId()));
+        // Получаем текущую историю нажатий пользователя (или пустую строку, если ее нет)
+        String currentHistory = userClicks.getOrDefault(chatId, "");
+
+        String clickedNumber = data.substring("players_".length());
+
+        currentHistory += clickedNumber;
+
+        if (currentHistory.length() > 3) {
+            currentHistory = currentHistory.substring(currentHistory.length() - 3);
+        }
+
+        userClicks.put(chatId, currentHistory);
+
+        if (currentHistory.equals("245")) {
+            // Если нажали 2, потом 4, потом 5 — выводим подпись
+            SendMessage secretMsg = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("✨ СЕКРЕТНЫЙ КОД АКТИВИРОВАН! ✨\n" +
+                            "Вы нашли секретную комбинацию)) В этом ролле вы играете за любой класс, который хотите! " +
+                            "Счастливых вам голодных игр! И помните: одежда человека красит, а броня спасает жизнь... " +
+                            "Ты умница 😊😊😊\n\n" +
+                            "С уважением: ▼GUM▼")
+                    .build();
+            telegramClient.execute(secretMsg);
+
+            // Очищаем память, чтобы код можно было ввести снова
+            userClicks.put(chatId, "");
+            return;
+        }
 
         if (data.startsWith("players_")) {
             int players = Integer.parseInt(data.substring("players_".length()));
