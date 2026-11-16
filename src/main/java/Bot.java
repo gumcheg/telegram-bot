@@ -60,6 +60,23 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
                     .build();
             telegramClient.execute(msg);
         }
+        if (text.equals("/secret")) {
+            SendMessage msg = SendMessage.builder()
+                    .chatId(chatId)
+                    .text("🔍 ЗАГАДКА:\n\n" +
+                            "Чтоб секрет мой отыскать,\n" +
+                            "Нужно цифры подобрать.\n" +
+                            "Сколько глаз у домового? \n" +
+                            "Столько выпей ты спиртного! \n" +
+                            "Сколько лап у пса-бойца? \n" +
+                            "Столько будет в нем свинца! \n" +
+                            "Сколько пальцев на руке \n" +
+                            "Держат хуй твой в кулаке? \n" +
+                            "Введи цифры по порядку,\n" +
+                            "И получишь в шоколадку!")
+                    .build();
+            telegramClient.execute(msg);
+        }
     }
 
     public enum Perk {
